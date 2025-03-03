@@ -17,12 +17,14 @@ Servo servoLeftLeg;
 Servo servoRightFoot;
 Servo servoRightLeg;
 
+bool wasUpPressed = false;
 bool wasSquarePressed = false;
 bool wasTrianglePressed = false;
 bool wasCrossPressed = false;
 bool wasL1Pressed = false;
 bool wasR1Pressed = false;
 bool SquareStateActive = false; 
+bool UpStateActive = false;
 bool manualOverride = false;
 
 bool randomEyesMode = true;  // Domyślnie tryb losowy włączony
@@ -119,14 +121,39 @@ void rightLegSwing() {
 }
 
 void moonWalk() {
-  for (int i = 0; i < 2; i++) { 
-    moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), RL, servoRightLeg, servoRightLeg.read(), RR, 30, 20);
-    moveServoSmooth(servoLeftLeg, servoLeftLeg.read(), LL, 30, 20);
-    moveServoSmooth(servoLeftLeg, servoLeftLeg.read(), LR, 30, 20);
-    moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), LL, servoRightLeg, servoRightLeg.read(), LR, 30, 20);
-    moveServoSmooth(servoRightLeg, servoRightLeg.read(), RR, 30, 20);
-    moveServoSmooth(servoRightLeg, servoRightLeg.read(), LR, 30, 20);
+  for (int i = 0; i < 1; i++) { 
+    moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), RL, servoRightLeg, servoRightLeg.read(), RR, 35, 20);
+    moveServoSmooth(servoLeftLeg, servoLeftLeg.read(), LL, 35, 20);
+    moveServoSmooth(servoLeftLeg, servoLeftLeg.read(), RL, 35, 20);
+    moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), LL, servoRightLeg, servoRightLeg.read(), LR, 35, 20);
+    moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), RL, servoRightLeg, servoRightLeg.read(), RR, 35, 20);
+    moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), LL, servoRightLeg, servoRightLeg.read(), LR, 35, 20);
+    moveServoSmooth(servoRightLeg, servoRightLeg.read(), RR, 35, 20);
+    moveServoSmooth(servoRightLeg, servoRightLeg.read(), LR, 35, 20);
   }
+}
+
+void steps() {
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
+  delay(300);
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 115, servoRightLeg, servoRightLeg.read(), 115, 30, 15);
+  delay(300);
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
+  delay(300);
+  moveServoSmooth(servoRightLeg, servoRightLeg.read(), 115, 30, 15);
+  delay(300);
+  moveServoSmooth(servoLeftLeg, servoLeftLeg.read(), 115, 30, 15);
+  delay(500);
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
+  delay(300);
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 115, servoRightLeg, servoRightLeg.read(), 115, 30, 15);
+  delay(300);
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
+  delay(500);
+}
+
+void roll() {
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 180, servoRightLeg, servoRightLeg.read(), 0, 20, 15);   // pozycja jazdy
 }
 
 void setup() {
@@ -170,19 +197,31 @@ void loop() {
       }
     }
 
-    // Square button handling
-    if (PS4.Square()) {
-      if (!wasSquarePressed) {
-        wasSquarePressed = true;
-        if (!SquareStateActive) {
-          moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 180, servoRightLeg, servoRightLeg.read(), 0, 20, 15);
-          SquareStateActive = true;
+    if (PS4.Up()) {
+      if (!wasUpPressed) {
+        wasUpPressed = true;
+        if (!UpStateActive) {
+          roll();
+          UpStateActive = true;
         } else {
           returnToNeutral();
-          SquareStateActive = false;
+          UpStateActive = false;
         }
       }
     } else {
+      wasUpPressed = false;
+    }
+
+    // Square button handling
+    if (PS4.Square()) {
+      if (!wasSquarePressed) {
+        manualOverride = true;  // Blokowanie joysticka
+        steps();
+        wasSquarePressed = true;
+      }
+    } else if (wasSquarePressed) {
+      returnToNeutral();  // Powrót do neutralnej pozycji po zakończeniu ruchów
+      manualOverride = false; // Odblokowanie joysticka
       wasSquarePressed = false;
     }
 
@@ -234,7 +273,7 @@ void loop() {
     }
 
     // Cross button handling
-    /*if (PS4.Cross()) {
+    if (PS4.Cross()) {
       if (!wasCrossPressed) {
         manualOverride = true;
         moonWalk();
@@ -244,7 +283,7 @@ void loop() {
       returnToNeutral();  // Powrót do neutralnej pozycji po zakończeniu ruchów
       manualOverride = false; // Odblokowanie joysticka
       wasCrossPressed = false;
-    }*/
+    }
 
     // Circle button handling
     if (PS4.Circle()) {
@@ -305,9 +344,8 @@ void loop() {
     }
   }
 
-  // Zmodyfikuj istniejący kod losowania oczu, aby sprawdzał tryb losowy
   static unsigned long lastActionTime = 0;
-  const unsigned long actionInterval = 2000; // 2 sekundy między akcjami
+  const unsigned long actionInterval = 1000; // 2 sekundy między akcjami
 
   // Tylko wyświetlaj losowe oczy, jeśli tryb losowy jest włączony
   if (randomEyesMode && millis() - lastActionTime >= actionInterval) {
