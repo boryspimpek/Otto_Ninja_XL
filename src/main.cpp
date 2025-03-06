@@ -43,6 +43,7 @@ int LL = 120;   // Left leg position LEFT TURN
 int LR = 155;   // Right leg position LEFT TURN
 int RL = 25;    // Left leg position RIGHT TURN
 int RR = 55;    // Right leg position RIGHT TURN
+
 void onConnect() {
   Serial.println("Connected!");
 }
@@ -135,21 +136,25 @@ void moonWalk() {
 
 void steps() {
   moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
-  delay(300);
+  delay(100);
   moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 115, servoRightLeg, servoRightLeg.read(), 115, 30, 15);
-  delay(300);
+  delay(100);
   moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
-  delay(300);
+  delay(100);
   moveServoSmooth(servoRightLeg, servoRightLeg.read(), 115, 30, 15);
-  delay(300);
+  delay(100);
   moveServoSmooth(servoLeftLeg, servoLeftLeg.read(), 115, 30, 15);
   delay(500);
   moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
-  delay(300);
+  delay(100);
   moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 115, servoRightLeg, servoRightLeg.read(), 115, 30, 15);
-  delay(300);
-  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 65, servoRightLeg, servoRightLeg.read(), 65, 30, 15);
+  delay(100);
+  moveServoSmooth(servoLeftLeg, servoRightLeg.read(), 65, 30, 15);
+  delay(100);
+  moveServoSmooth(servoRightLeg, servoRightLeg.read(), 65, 30, 15);
   delay(500);
+  moveServosSmooth(servoLeftLeg, servoLeftLeg.read(), 115, servoRightLeg, servoRightLeg.read(), 115, 30, 15);
+  delay(100);
 }
 
 void roll() {
