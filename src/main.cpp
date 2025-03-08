@@ -3,14 +3,22 @@
 #include <Wire.h>
 #include <U8g2lib.h>
 #include "robotface.h"
+#include <DFRobotDFPlayerMini.h>
 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 RobotEyes eyes(u8g2);
+
+// Definicja pinów RX i TX dla UART
+#define RXD2 16
+#define TXD2 17
 
 static const int servoLeftFootPin = 13;   // 360° continuous rotation servo
 static const int servoLeftLegPin = 12;    // Standard 180° servo
 static const int servoRightFootPin = 14;  // 360° continuous rotation servo 
 static const int servoRightLegPin = 27;   // Standard 180° servo
+
+HardwareSerial mySerial(1); // Użycie UART1
+DFRobotDFPlayerMini myDFPlayer;
 
 Servo servoLeftFoot;
 Servo servoLeftLeg;
@@ -30,6 +38,12 @@ bool manualOverride = false;
 bool randomEyesMode = true;  // Domyślnie tryb losowy włączony
 bool wasCirclePressed = false;  // Śledzi stan przycisku Circle
 int currentEyeState = 0;     // Aktualny stan oczu
+
+bool firstPlay = true;
+unsigned long previousMillis = 0;  // Przechowuje czas rozpoczęcia utworu
+const long playDuration = 5000;    // Czas trwania utworu (5 sekund)
+bool isPlaying = false;            // Flaga odtwarzania
+int currentTrack = 1;               // Aktualnie odtwarzany utwór
 
 const int JOYSTICK_DEADZONE = 15;
 const int MAX_SERVO_SPEED = 180;
@@ -183,10 +197,43 @@ void setup() {
   Wire.begin();
   eyes.begin();
 
+  mySerial.begin(9600, SERIAL_8N1, RXD2, TXD2);
+    randomSeed(esp_random()); // Inicjalizacja generatora liczb losowych
+    
+    if (!myDFPlayer.begin(mySerial)) {
+        Serial.println("Błąd komunikacji z DFPlayer Mini!");
+        while (true);
+    }
+    
+    myDFPlayer.volume(30); // Ustawienie głośności (0-30)
   delay(300);
 }
 
 void loop() {
+  if (!isPlaying) {
+    if (firstPlay) {
+      // Odtwarzanie pierwszego utworu
+      Serial.println("Odtwarzanie pliku 1...");
+      myDFPlayer.play(1);
+      currentTrack = 1; // Zapisujemy numer utworu
+      firstPlay = false;
+    } else {
+      // Losowe odtwarzanie utworów od 2 do 8
+      currentTrack = random(2, 9);
+      Serial.print("Odtwarzanie pliku ");
+      Serial.println(currentTrack);
+      myDFPlayer.play(currentTrack);
+    }
+
+    // Rozpoczęcie śledzenia czasu
+    previousMillis = millis();
+    isPlaying = true; // Flaga odtwarzania aktywna
+  }
+
+  // Sprawdzamy, czy minęło 5000 ms (5 sekundy) od rozpoczęcia odtwarzania
+  if (isPlaying && millis() - previousMillis >= playDuration) {
+    isPlaying = false; // Kończymy odtwarzanie
+  }  
   if (PS4.isConnected()) {
     // Sterowanie serwami 360 za pomocą joysticków (gdy nie ma manualOverride)
     if (!manualOverride) {
