@@ -51,7 +51,7 @@ const int MAX_SERVO_SPEED = 180;
 int LNP = 88;     // Left leg neutral position
 int RNP = 90;     // Right leg neutral position
 int LFS = 96;     // Left foot stop position
-int RFS = 94;     // Right foot stop position
+int RFS = 95;     // Right foot stop position
 
 int LL = 120;   // Left leg position LEFT TURN
 int LR = 155;   // Right leg position LEFT TURN
