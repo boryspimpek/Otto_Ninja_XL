@@ -234,6 +234,7 @@ void loop() {
   if (isPlaying && millis() - previousMillis >= playDuration) {
     isPlaying = false; // Kończymy odtwarzanie
   }  
+  
   if (PS4.isConnected()) {
     // Sterowanie serwami 360 za pomocą joysticków (gdy nie ma manualOverride)
     if (!manualOverride) {
