@@ -1,6 +1,9 @@
 # Otto Ninja XL ESP32 PS4 Robot Controller (Otto Ninja XL Remix)
 
-This is a **remix** of the original OTTO Ninja DIY robot, enhanced with ESP32 functionality, PS4 controller support, servo-based movements, animated eyes, and sound effects. The 3D model is adapted from the **Otto Ninja XL Remix Version**.
+This is a **remix** of the [original OTTO Ninja DIY robot](https://github.com/OttoDIY/OttoNinja/), enhanced with ESP32 functionality, PS4 controller support, servo-based movements, animated eyes, and sound effects.  
+The 3D model is adapted from the [Otto Ninja Starter robot](https://www.printables.com/model/231580-otto-ninja-starter-robot).
+
+![Otto Ninja XL Robot](images/11.webp)
 
 ## 3D Model
 - The robot uses the **Otto Ninja XL Remix Version** from Printables:  
@@ -57,6 +60,16 @@ This is a **remix** of the original OTTO Ninja DIY robot, enhanced with ESP32 fu
 | Right Leg Servo  | 27  |
 | DFPlayer RX      | 16  |
 | DFPlayer TX      | 17  |
+
+## Gallery
+<p align="center">
+  <img src="images/11.webp" width="45%">
+  <img src="images/12.webp" width="45%">
+</p>
+<p align="center">
+  <img src="images/14.webp" width="45%">
+  <img src="images/16.webp" width="45%">
+</p>
 
 ## License
 
